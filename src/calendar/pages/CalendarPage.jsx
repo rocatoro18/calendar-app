@@ -7,21 +7,12 @@ import { CalendarEvent, NavBar, CalendarModal } from '../';
 import { localizer, getMessagesES } from '../../helpers';
 import { useState } from 'react';
 import { useUiStore } from '../../hooks';
+import { useCalendarStore } from '../../hooks/useCalendarStore';
 
-
-const events = [{
-  title: 'Cumpleaños',
-  notes: 'Comprar regalo',
-  start: new Date(),
-  end: addHours(new Date(), 2),
-  bgColor: '#fafafa',
-  user:{
-    _id: '123',
-    name: 'Roberto'
-  }
-}]
 
 export const CalendarPage = () => {
+
+  const {events, setActiveEvent} = useCalendarStore();
 
   const {openDateModal} = useUiStore();
 
@@ -49,7 +40,8 @@ export const CalendarPage = () => {
   }
 
   const onSelect = (event) => {
-    console.log({click: event});
+    //console.log({click: event});
+    setActiveEvent(event);
   }
 
   const onViewChanged = (event) => {
