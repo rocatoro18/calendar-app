@@ -6,7 +6,7 @@
 // ESTE CUSTOM HOOK EXPORTA
 
 import { useDispatch, useSelector } from 'react-redux';
-import { onSetActiveEvent } from '../store/calendar/calendarSlice';
+import { onAddNewEvent, onDeleteEvent, onSetActiveEvent, onUpdateEvent } from '../store/calendar/calendarSlice';
 
 export const useCalendarStore = () => {
   
@@ -18,12 +18,38 @@ export const useCalendarStore = () => {
         dispatch(onSetActiveEvent(calendarEvent));
     }
 
+    // INICIO PROCESO DE GRABACION
+
+    const startSavingEvent = async(calendarEvent) => {
+        // TODO: LLEGAR AL BACKEND
+
+        // TODO BIEN
+
+        if(calendarEvent._id){
+            // Actualizando
+            dispatch(onUpdateEvent({...calendarEvent}));
+        } else {
+            // Creando
+            dispatch(onAddNewEvent({...calendarEvent, _id: new Date().getTime()}));
+        }
+
+    }
+
+    const startDeletingEvent = () => {
+        // TODO; LLEGAR AL BACKEND
+        dispatch(onDeleteEvent());
+    }
+
     return {
         // Propiedades
         activeEvent,
         events,
+        // DOBLE NEGACION REGRESA BOOLEANO
+        hasEventSelected: !!activeEvent,
         // Metodos
-        setActiveEvent
+        setActiveEvent,
+        startSavingEvent,
+        startDeletingEvent
 
    }
 }

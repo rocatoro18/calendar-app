@@ -30,7 +30,7 @@ Modal.setAppElement('#root');
 
 export const CalendarModal = () => {
 
-    const {activeEvent} = useCalendarStore();
+    const {activeEvent, startSavingEvent} = useCalendarStore();
 
     const {isDateModalOpen, closeDateModal} = useUiStore();
 
@@ -88,7 +88,7 @@ export const CalendarModal = () => {
         //setIsOpen(false);
     }
 
-    const onSubmit = (event) => {
+    const onSubmit = async(event) => {
         // PREVENIR PROPAGACION
         event.preventDefault();
         setFormSubmitted(true);
@@ -103,11 +103,15 @@ export const CalendarModal = () => {
 
         if(formValues.title.length <= 0) return ;
 
-        console.log(formValues);
+        //console.log(formValues);
 
         //TODO:
+        await startSavingEvent(formValues);
+        closeDateModal();
+        setFormSubmitted(false);
         // CERRAR MODAL
         // REMOVER ERRORES EN PANTALLA
+
     }
 
   return (
