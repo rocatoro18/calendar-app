@@ -1,8 +1,13 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { LoginPage } from '../auth';
 import { CalendarPage } from '../calendar';
+import { getEnVariables } from '../helpers';
+
 
 export const AppRouter = () => {
+
+
+    //console.log(getEnVariables());
 
     const authStatus = 'authenticated'; //'not-authenticated';
 
