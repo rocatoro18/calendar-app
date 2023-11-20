@@ -6,7 +6,6 @@ import { getEnVariables } from '../helpers';
 
 export const AppRouter = () => {
 
-
     //console.log(getEnVariables());
 
     const authStatus = 'not-authenticated'; //'not-authenticated';
