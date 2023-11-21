@@ -8,5 +8,16 @@ const calendarApi = axios.create({
 });
 
 // TODO: Configurar interceptores
+// CUALQUIER PETICION QUE HAGA CON EL CALENDAR API
+// ADICIONALMENTE SE LE AGREGA ESTE HEADER
+calendarApi.interceptors.request.use(config => {
+
+    config.headers = {
+        ...config.headers,
+        'x-token': localStorage.getItem('token')
+    }
+
+    return config;
+})
 
 export default calendarApi;
