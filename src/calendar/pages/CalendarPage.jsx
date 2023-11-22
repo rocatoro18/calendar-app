@@ -4,11 +4,13 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { CalendarEvent, NavBar, CalendarModal, FabAddNew, FabDelete } from '../';
 import { localizer, getMessagesES } from '../../helpers';
 import { useEffect, useState } from 'react';
-import { useUiStore } from '../../hooks';
+import { useAuthStore, useUiStore } from '../../hooks';
 import { useCalendarStore } from '../../hooks/useCalendarStore';
 
 
 export const CalendarPage = () => {
+
+  const {user} = useAuthStore();
 
   const {events, setActiveEvent, startLoadingEvents} = useCalendarStore();
 
@@ -19,8 +21,15 @@ export const CalendarPage = () => {
   const eventStyleGetter = (event, start, end, isSelected) => {
     //console.log({event, start, end, isSelected});
 
+    //console.log(event);
+
+    // ESTE OR EN LA CONDICION DEBIDO A DIFERENCIAS CON EL BACKEND
+    // _id directamente lo regresa nuestro endpoint
+    // uid cuando ya hicimos alguna actualizacion
+    const isMyEvent = (user.uid === event.user._id) || (user.uid === event.user.uid);
+
     const style = {
-      backgroundColor: '#347CF7',
+      backgroundColor: isMyEvent ? '#347CF7' : '#465660',
       borderRadius: '0px',
       opacity: 0.8,
       color: 'white'

@@ -6,9 +6,10 @@
 // ESTE CUSTOM HOOK EXPORTA
 
 import { useDispatch, useSelector } from 'react-redux';
-import { onAddNewEvent, onDeleteEvent, onSetActiveEvent, onUpdateEvent } from '../store/calendar/calendarSlice';
+import { onAddNewEvent, onDeleteEvent, onLoadEvents, onSetActiveEvent, onUpdateEvent } from '../store/calendar/calendarSlice';
 import { calendarApi } from '../api';
 import { convertEventsToDateEvents } from '../helpers';
+import Swal from 'sweetalert2';
 
 export const useCalendarStore = () => {
   
@@ -24,20 +25,27 @@ export const useCalendarStore = () => {
     // INICIO PROCESO DE GRABACION
 
     const startSavingEvent = async(calendarEvent) => {
-       
 
-        // TODO: UPDATE EVENT
+        try {
+            //console.log(calendarEvent);
+            if(calendarEvent.id){
+                // Actualizando
+    
+                await calendarApi.put(`/events/${calendarEvent.id}`, calendarEvent);
+                dispatch(onUpdateEvent({...calendarEvent, user}));
+                return;
+            } 
+                // Creando
+                // EL MISMO CALENDAR API ESTA INCRUSTANDO MEDIANTE
+                // INTERCEPTORES LOS HEADERS NECESARIOS COMO EL TOKEN
+                const {data} = await calendarApi.post('/events', calendarEvent);
+    
+                dispatch(onAddNewEvent({...calendarEvent, id: data.evento.id, user}));
+    
 
-        if(calendarEvent._id){
-            // Actualizando
-            dispatch(onUpdateEvent({...calendarEvent}));
-        } else {
-            // Creando
-            // EL MISMO CALENDAR API ESTA INCRUSTANDO MEDIANTE
-            // INTERCEPTORES LOS HEADERS NECESARIOS COMO EL TOKEN
-            const {data} = await calendarApi.post('/events', calendarEvent);
-
-            dispatch(onAddNewEvent({...calendarEvent, id: data.evento.id, user}));
+        } catch (error) {
+            console.log(error);
+            Swal.fire('Error al guardar', error.response.data.msg, 'error');
         }
 
     }
@@ -52,7 +60,8 @@ export const useCalendarStore = () => {
             
             const {data} = await calendarApi.get('/events')
             const events = convertEventsToDateEvents(data.eventos);
-            console.log(events);
+            dispatch(onLoadEvents(events));
+            //console.log(events);
 
         } catch (error) {
             console.log('Error cargando eventos');
