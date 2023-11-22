@@ -7,12 +7,15 @@
 
 import { useDispatch, useSelector } from 'react-redux';
 import { onAddNewEvent, onDeleteEvent, onSetActiveEvent, onUpdateEvent } from '../store/calendar/calendarSlice';
+import { calendarApi } from '../api';
+import { convertEventsToDateEvents } from '../helpers';
 
 export const useCalendarStore = () => {
   
     const dispatch = useDispatch();
 
     const {events, activeEvent} = useSelector(state => state.calendar);
+    const {user} = useSelector(state => state.auth);
 
     const setActiveEvent = (calendarEvent) => {
         dispatch(onSetActiveEvent(calendarEvent));
@@ -21,16 +24,20 @@ export const useCalendarStore = () => {
     // INICIO PROCESO DE GRABACION
 
     const startSavingEvent = async(calendarEvent) => {
-        // TODO: LLEGAR AL BACKEND
+       
 
-        // TODO BIEN
+        // TODO: UPDATE EVENT
 
         if(calendarEvent._id){
             // Actualizando
             dispatch(onUpdateEvent({...calendarEvent}));
         } else {
             // Creando
-            dispatch(onAddNewEvent({...calendarEvent, _id: new Date().getTime()}));
+            // EL MISMO CALENDAR API ESTA INCRUSTANDO MEDIANTE
+            // INTERCEPTORES LOS HEADERS NECESARIOS COMO EL TOKEN
+            const {data} = await calendarApi.post('/events', calendarEvent);
+
+            dispatch(onAddNewEvent({...calendarEvent, id: data.evento.id, user}));
         }
 
     }
@@ -38,6 +45,19 @@ export const useCalendarStore = () => {
     const startDeletingEvent = () => {
         // TODO; LLEGAR AL BACKEND
         dispatch(onDeleteEvent());
+    }
+
+    const startLoadingEvents = async() => {
+        try {
+            
+            const {data} = await calendarApi.get('/events')
+            const events = convertEventsToDateEvents(data.eventos);
+            console.log(events);
+
+        } catch (error) {
+            console.log('Error cargando eventos');
+            console.log(error);
+        }
     }
 
     return {
@@ -49,7 +69,8 @@ export const useCalendarStore = () => {
         // Metodos
         setActiveEvent,
         startSavingEvent,
-        startDeletingEvent
+        startDeletingEvent,
+        startLoadingEvents
 
    }
 }
